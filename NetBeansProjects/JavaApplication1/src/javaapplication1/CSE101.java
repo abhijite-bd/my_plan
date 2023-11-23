@@ -4,12 +4,19 @@
  */
 package javaapplication1;
 
+import java.awt.BorderLayout;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-//import net.proteanit.sql.DbUtils;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DefaultPieDataset;
 
+//import net.proteanit.sql.DbUtils;
 /**
  *
  * @author HP
@@ -26,7 +33,7 @@ public class CSE101 extends javax.swing.JFrame {
             JDBCCONN c = new JDBCCONN();
             ResultSet rs = c.s.executeQuery("select * from cse101");
 //            table.setModel(DbUtils.resultSetToTableModel(rs));
-            int no=1;
+            int no = 1;
             while (rs.next()) {
 //                   System.out.println(rs.getInt(1)+ " "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5));
 //                String no = String.valueOf(rs.getInt("no"));
@@ -34,8 +41,14 @@ public class CSE101 extends javax.swing.JFrame {
                 String sup = rs.getString("supliments");
                 String note = rs.getString("note");
                 String chk = String.valueOf(rs.getInt("done"));
+                System.out.println(chk);
+                if (chk.equals("0")) {
+                    chk = "No";
+                } else {
+                    chk = "Yes";
+                }
 //                   
-                String tdata[] = {no+"", title, sup, note, chk};
+                String tdata[] = {no + "", title, sup, note, chk};
                 DefaultTableModel table = (DefaultTableModel) jTable1.getModel();
                 table.addRow(tdata);
                 no++;
@@ -64,11 +77,14 @@ public class CSE101 extends javax.swing.JFrame {
         txttitle = new javax.swing.JTextField();
         txtsup = new javax.swing.JTextField();
         txtnote = new javax.swing.JTextField();
-        txtdone = new javax.swing.JTextField();
         btnadd = new javax.swing.JButton();
         btndelete = new javax.swing.JButton();
-        btnupdate = new javax.swing.JButton();
+        btnprogress = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        btnupdate1 = new javax.swing.JButton();
+        CheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -77,7 +93,7 @@ public class CSE101 extends javax.swing.JFrame {
 
             },
             new String [] {
-                "No", "Title", "Supliments", "Note", "Done"
+                "No", "Topic", "Resources", "Self-Note", "Completed"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -96,16 +112,16 @@ public class CSE101 extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Title");
+        jLabel1.setText("Topic");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setText("Supliments");
+        jLabel2.setText("Resources");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setText("Note");
+        jLabel3.setText("Self-Note");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel4.setText("Done");
+        jLabel4.setText("Completed");
 
         txtsup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -129,11 +145,11 @@ public class CSE101 extends javax.swing.JFrame {
             }
         });
 
-        btnupdate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnupdate.setText("UPDATE");
-        btnupdate.addActionListener(new java.awt.event.ActionListener() {
+        btnprogress.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnprogress.setText("PROGRESS");
+        btnprogress.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnupdateActionPerformed(evt);
+                btnprogressActionPerformed(evt);
             }
         });
 
@@ -145,6 +161,31 @@ public class CSE101 extends javax.swing.JFrame {
             }
         });
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel7.setText("Title:  Fundamentals of Computer and Computing");
+
+        jComboBox1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "COMPLETE", "INCOMPLETE" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
+        btnupdate1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnupdate1.setText("UPDATE");
+        btnupdate1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnupdate1ActionPerformed(evt);
+            }
+        });
+
+        CheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -152,37 +193,48 @@ public class CSE101 extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 682, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
+                        .addGap(69, 69, 69)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnadd))
+                        .addGap(25, 25, 25)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnadd)
-                                .addGap(41, 41, 41)
-                                .addComponent(btndelete, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(62, 62, 62)
-                                .addComponent(btnupdate)
-                                .addGap(52, 52, 52)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btndelete, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(28, 28, 28)
+                                        .addComponent(btnupdate1)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnprogress)
+                                        .addGap(27, 27, 27)
+                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txttitle, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                                        .addComponent(txtsup)
+                                        .addComponent(txtnote)))
+                                .addGap(18, 18, Short.MAX_VALUE)
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(55, 55, 55)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txttitle)
-                                    .addComponent(txtsup)
-                                    .addComponent(txtnote)
-                                    .addComponent(txtdone, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))))))
-                .addContainerGap(53, Short.MAX_VALUE))
+                                .addComponent(CheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 799, Short.MAX_VALUE))))
+                .addGap(65, 65, 65))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(55, 55, 55)
+                .addGap(42, 42, 42)
+                .addComponent(jLabel7)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txttitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -195,18 +247,22 @@ public class CSE101 extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(txtnote, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtdone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(0, 7, Short.MAX_VALUE))
+                    .addComponent(CheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnadd)
                     .addComponent(btndelete)
-                    .addComponent(btnupdate)
+                    .addComponent(btnprogress)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnupdate1)
                     .addComponent(jButton1))
-                .addGap(30, 30, 30)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39))
+                .addGap(18, 18, 18))
         );
 
         pack();
@@ -215,7 +271,7 @@ public class CSE101 extends javax.swing.JFrame {
     private void txtsupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsupActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsupActionPerformed
-    String ttitle="";
+    String ttitle = "";
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
 
@@ -227,18 +283,160 @@ public class CSE101 extends javax.swing.JFrame {
         txttitle.setText(ttitle);
         txtsup.setText(tsup);
         txtnote.setText(tnote);
-        txtdone.setText(tdone);
+
+        if (tdone.equals("Yes")) {
+            CheckBox.setSelected(true);
+        } else {
+            CheckBox.setSelected(false);
+        }
 
 
     }//GEN-LAST:event_jTable1MouseClicked
 
-    private void btnupdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnupdateActionPerformed
+    private void btnprogressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnprogressActionPerformed
+        int tot = 1, done = 1;
+        try {
+            JDBCCONN c = new JDBCCONN();
+            ResultSet rs1 = c.s.executeQuery("select count(*) from cse101");
+
+            while (rs1.next()) {
+                tot = rs1.getInt(1);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            JDBCCONN c = new JDBCCONN();
+            ResultSet rs1 = c.s.executeQuery("select count(*) from cse101 where done=1");
+
+            while (rs1.next()) {
+                done = rs1.getInt(1);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        DefaultPieDataset pieDataset = new DefaultPieDataset();
+        pieDataset.setValue("Complete", new Integer(done));
+        pieDataset.setValue("Incomplete", new Integer(tot - done));
+
+        JFreeChart pieChart = ChartFactory.createPieChart("Progress", pieDataset, true, true, false);
+        PiePlot pieplot = (PiePlot) pieChart.getPlot();
+        ChartFrame frame = new ChartFrame("Pie Chart", pieChart);
+        frame.setVisible(true);
+        frame.setSize(500, 500);
+
+
+    }//GEN-LAST:event_btnprogressActionPerformed
+
+    private void btndeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeleteActionPerformed
+        if (jTable1.getSelectedRowCount() == 0 || jTable1.getSelectedRowCount() > 1) {
+            JOptionPane.showMessageDialog(this, "Please Select a Row..");
+        } else {
+            DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
+            String title = tblModel.getValueAt(jTable1.getSelectedRow(), 1).toString();
+            try {
+                JDBCCONN c = new JDBCCONN();
+                String query = "delete from cse101 where title= '" + title + "'";
+                c.s.executeUpdate(query);
+                JOptionPane.showMessageDialog(null, "Employee Details Deleted Successfully");
+                setVisible(false);
+                new CSE101().setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }//GEN-LAST:event_btndeleteActionPerformed
+
+    private void btnaddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnaddActionPerformed
+        DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
+        String title = txttitle.getText();
+        String sup = txtsup.getText();
+        String note = txtnote.getText();
+        String done = "0";
+        if (CheckBox.isSelected()) {
+            done = "1";
+        }
+        if (title.equals("")) {
+            JOptionPane.showMessageDialog(null, "Topic name is empty");
+        } else {
+            try {
+                JDBCCONN conn = new JDBCCONN();
+                String query = "insert into cse101 values('" + title + "','" + sup + "','" + note + "','" + done + "')";
+                conn.s.executeUpdate(query);
+                JOptionPane.showMessageDialog(null, "Added Successfully");
+                setVisible(false);
+                new CSE101().setVisible(true);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }//GEN-LAST:event_btnaddActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        setVisible(false);
+        L1S1 l1s1 = new L1S1();
+        l1s1.show();
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+//        table = new JTable();
+        String value = jComboBox1.getSelectedItem().toString();
+        jTable1.setModel(new DefaultTableModel(null, new String[]{"No", "Topic", "Resources", "Self-Note", "Completed"}));
+        try {
+            JDBCCONN c = new JDBCCONN();
+            ResultSet rs;
+            if (value == "ALL") {
+                rs = c.s.executeQuery("select * from cse101");
+            } else if (value == "COMPLETE") {
+                rs = c.s.executeQuery("select * from cse101 where done=1");
+            } else {
+                rs = c.s.executeQuery("select * from cse101 where done=0");
+            }
+//            table.setModel(DbUtils.resultSetToTableModel(rs));
+            int no = 1;
+            while (rs.next()) {
+//                   System.out.println(rs.getInt(1)+ " "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5));
+//                String no = String.valueOf(rs.getInt("no"));
+                String title = rs.getString("title");
+                String sup = rs.getString("supliments");
+                String note = rs.getString("note");
+                String chk = String.valueOf(rs.getInt("done"));
+                if (chk.equals("0")) {
+                    chk = "No";
+                } else {
+                    chk = "Yes";
+                }
+//                   
+                String tdata[] = {no + "", title, sup, note, chk};
+                DefaultTableModel table = (DefaultTableModel) jTable1.getModel();
+                table.addRow(tdata);
+                no++;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void btnupdate1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnupdate1ActionPerformed
         DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
         if (jTable1.getSelectedRowCount() == 1) {
             String title = txttitle.getText();
             String sup = txtsup.getText();
             String note = txtnote.getText();
-            String done = txtdone.getText();
+            String done = "0";
+            if (CheckBox.isSelected()) {
+                done = "1";
+            }
 
             tblModel.setValueAt(title, jTable1.getSelectedRow(), 1);
             tblModel.setValueAt(sup, jTable1.getSelectedRow(), 2);
@@ -246,7 +444,6 @@ public class CSE101 extends javax.swing.JFrame {
             try {
                 JDBCCONN c = new JDBCCONN();
                 String query = "update cse101 set title = '" + title + "', supliments = '" + sup + "', note = '" + note + "',done= '" + done + "' where title='" + ttitle + "'";
-                System.out.println(query);
                 c.s.executeUpdate(query);
 //            System.out.println(query);
                 JOptionPane.showMessageDialog(this, "Update Successfully..");
@@ -262,49 +459,11 @@ public class CSE101 extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Multiple Row Selected..");
             }
         }
-    }//GEN-LAST:event_btnupdateActionPerformed
+    }//GEN-LAST:event_btnupdate1ActionPerformed
 
-    private void btndeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeleteActionPerformed
-        DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
-        String title = tblModel.getValueAt(jTable1.getSelectedRow(), 1).toString();
-        try {
-            JDBCCONN c = new JDBCCONN();
-            String query = "delete from cse101 where title= '" + title + "'";
-            c.s.executeUpdate(query);
-            JOptionPane.showMessageDialog(null, "Employee Details Deleted Successfully");
-            setVisible(false);
-            new CSE101().setVisible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }//GEN-LAST:event_btndeleteActionPerformed
-
-    private void btnaddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnaddActionPerformed
-        DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
-        String title = txttitle.getText();
-        String sup = txtsup.getText();
-        String note = txtnote.getText();
-        String done = txtdone.getText();
-        try {
-            JDBCCONN conn = new JDBCCONN();
-            String query = "insert into cse101 values('" + title + "','" + sup + "','" + note + "','" + done + "')";
-            conn.s.executeUpdate(query);
-            JOptionPane.showMessageDialog(null, "Added Successfully");
-            setVisible(false);
-            new CSE101().setVisible(true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_btnaddActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        setVisible(false);
-        L1S1 l1s1=new L1S1();
-        l1s1.show();
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CheckBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -342,17 +501,20 @@ public class CSE101 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox CheckBox;
     private javax.swing.JButton btnadd;
     private javax.swing.JButton btndelete;
-    private javax.swing.JButton btnupdate;
+    private javax.swing.JButton btnprogress;
+    private javax.swing.JButton btnupdate1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField txtdone;
     private javax.swing.JTextField txtnote;
     private javax.swing.JTextField txtsup;
     private javax.swing.JTextField txttitle;
