@@ -44,7 +44,7 @@ public class wellcome extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 0, 0));
-        jButton1.setText("Click Here");
+        jButton1.setText("START");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -116,7 +116,13 @@ public class wellcome extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JOptionPane.showMessageDialog(null, "Discover the StudyPlan software, your ultimate tool for academic success!\nStreamline your study routine, organize tasks, and stay on top of deadlines effortlessly with \n  intuitive scheduling features,\n  personalized goal-setting,\n  progress tracking.\nStudyPlan empowers you to optimize your learning journey.\nElevate your study experience with this innovative software designed to enhance \nproductivity and maximize your academic potential.");
+        JOptionPane.showMessageDialog(null, "Discover the StudyPlan software, your ultimate tool for academic success!\n"
+                + "Streamline your study routine, organize tasks, and stay on top of deadlines effortlessly with \n  "
+                + "intuitive scheduling features,\n  personalized goal-setting,\n  progress tracking.\n"
+                + "StudyPlan empowers you to optimize your learning journey.\n"
+                + "Elevate your study experience with this innovative software designed to enhance \n"
+                + "productivity and maximize your academic potential.\n"
+                + "© Abhijite Deb Barman , Kamona Rani Roy , Mrinal Bashak Shuvo\n");
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
