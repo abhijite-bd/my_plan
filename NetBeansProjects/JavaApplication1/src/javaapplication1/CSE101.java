@@ -1,11 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package javaapplication1;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -16,27 +18,25 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 
-//import net.proteanit.sql.DbUtils;
-/**
- *
- * @author HP
- */
 public class CSE101 extends javax.swing.JFrame {
 
     JTable table;
+    Connection c;
+    Statement s;
 
     public CSE101() {
         initComponents();
         table = new JTable();
-
+        view1.setEnabled(false);
+        view2.setEnabled(false);
+//        getContentPane().setBackground(Color.WHITE);
         try {
-            JDBCCONN c = new JDBCCONN();
-            ResultSet rs = c.s.executeQuery("select * from cse101");
-//            table.setModel(DbUtils.resultSetToTableModel(rs));
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            c = DriverManager.getConnection("jdbc:mysql:///database1", "root", "abhijite");
+            s = c.createStatement();
+            ResultSet rs = s.executeQuery("select * from cse101");
             int no = 1;
             while (rs.next()) {
-//                   System.out.println(rs.getInt(1)+ " "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5));
-//                String no = String.valueOf(rs.getInt("no"));
                 String title = rs.getString("title");
                 String sup = rs.getString("supliments");
                 String note = rs.getString("note");
@@ -81,13 +81,18 @@ public class CSE101 extends javax.swing.JFrame {
         btndelete = new javax.swing.JButton();
         btnprogress = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         btnupdate1 = new javax.swing.JButton();
         CheckBox = new javax.swing.JCheckBox();
         jLabel5 = new javax.swing.JLabel();
+        view1 = new javax.swing.JButton();
+        view2 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jLabel43 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBounds(new java.awt.Rectangle(200, 200, 0, 0));
+        setLocation(new java.awt.Point(100, 100));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -105,28 +110,47 @@ public class CSE101 extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setMinWidth(40);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(40);
+            jTable1.getColumnModel().getColumn(0).setMaxWidth(40);
+            jTable1.getColumnModel().getColumn(1).setMinWidth(320);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(320);
+            jTable1.getColumnModel().getColumn(1).setMaxWidth(320);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(30);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(20);
+            jTable1.getColumnModel().getColumn(4).setMinWidth(80);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(4).setMaxWidth(80);
+        }
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Topic");
+        jLabel1.setText("Topic Name   ");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setText("Resources");
+        jLabel2.setText("Resource Link ");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setText("Self-Note");
+        jLabel3.setText("Self-Note Link ");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel4.setText("Completed");
+        jLabel4.setText("Completed ");
 
         txtsup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtsupActionPerformed(evt);
+            }
+        });
+        txtsup.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtsupKeyTyped(evt);
             }
         });
 
@@ -155,15 +179,12 @@ public class CSE101 extends javax.swing.JFrame {
         });
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton1.setText("Back");
+        jButton1.setText("BACK");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel7.setText("Title:  Fundamentals of Computer and Computing");
 
         jComboBox1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "COMPLETE", "INCOMPLETE" }));
@@ -187,89 +208,128 @@ public class CSE101 extends javax.swing.JFrame {
             }
         });
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel5.setText("All Topics :");
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
+        jLabel5.setText("All Topics ");
+
+        view1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        view1.setText("View");
+        view1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                view1ActionPerformed(evt);
+            }
+        });
+
+        view2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        view2.setText("View");
+        view2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                view2ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton2.setText("CLEAR");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel43.setBackground(new java.awt.Color(0, 76, 142));
+        jLabel43.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        jLabel43.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel43.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel43.setText("Fundamental of Computer and Computing");
+        jLabel43.setOpaque(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(69, 69, 69)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnadd))
-                        .addGap(25, 25, 25)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
+                                .addGap(50, 50, 50)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(61, 61, 61)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtnote, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtsup, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(123, 123, 123)
+                                        .addComponent(btndelete, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnupdate1)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btndelete, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(28, 28, 28)
-                                        .addComponent(btnupdate1)
+                                        .addGap(42, 42, 42)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(view1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(view2, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(4, 4, 4)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(btnprogress)
-                                        .addGap(27, 27, 27)
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(txttitle, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-                                        .addComponent(txtsup)
-                                        .addComponent(txtnote)))
-                                .addGap(18, 18, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(CheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(btnprogress)))))
+                            .addComponent(txttitle, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnadd))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 796, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addGap(68, 68, 68))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 817, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
+            .addComponent(jLabel43, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel7)
-                .addGap(26, 26, 26)
+                .addComponent(jLabel43, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txttitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtsup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtsup)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(view1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtnote, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnote, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(view2))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
-                        .addGap(0, 7, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(CheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnadd)
                     .addComponent(btndelete)
-                    .addComponent(btnprogress)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnupdate1)
-                    .addComponent(jButton1))
+                    .addComponent(jButton2)
+                    .addComponent(btnprogress))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
@@ -293,6 +353,17 @@ public class CSE101 extends javax.swing.JFrame {
         txttitle.setText(ttitle);
         txtsup.setText(tsup);
         txtnote.setText(tnote);
+        if (tsup.equals("no") || tsup.equals("No") || tsup.equals("")) {
+            view1.setEnabled(false);
+        } else {
+            view1.setEnabled(true);
+        }
+
+        if (tnote.equals("no") || tnote.equals("No") || tnote.equals("")) {
+            view2.setEnabled(false);
+        } else {
+            view2.setEnabled(true);
+        }
 
         if (tdone.equals("Yes")) {
             CheckBox.setSelected(true);
@@ -306,8 +377,10 @@ public class CSE101 extends javax.swing.JFrame {
     private void btnprogressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnprogressActionPerformed
         int tot = 1, done = 1;
         try {
-            JDBCCONN c = new JDBCCONN();
-            ResultSet rs1 = c.s.executeQuery("select count(*) from cse101");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            c = DriverManager.getConnection("jdbc:mysql:///database1", "root", "abhijite");
+            s = c.createStatement();
+            ResultSet rs1 = s.executeQuery("select count(*) from cse101");
 
             while (rs1.next()) {
                 tot = rs1.getInt(1);
@@ -318,8 +391,10 @@ public class CSE101 extends javax.swing.JFrame {
         }
 
         try {
-            JDBCCONN c = new JDBCCONN();
-            ResultSet rs1 = c.s.executeQuery("select count(*) from cse101 where done=1");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            c = DriverManager.getConnection("jdbc:mysql:///database1", "root", "abhijite");
+            s = c.createStatement();
+            ResultSet rs1 = s.executeQuery("select count(*) from cse101 where done=1");
 
             while (rs1.next()) {
                 done = rs1.getInt(1);
@@ -349,10 +424,12 @@ public class CSE101 extends javax.swing.JFrame {
             DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
             String title = tblModel.getValueAt(jTable1.getSelectedRow(), 1).toString();
             try {
-                JDBCCONN c = new JDBCCONN();
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                c = DriverManager.getConnection("jdbc:mysql:///database1", "root", "abhijite");
+                s = c.createStatement();
                 String query = "delete from cse101 where title= '" + title + "'";
-                c.s.executeUpdate(query);
-                JOptionPane.showMessageDialog(null, "Employee Details Deleted Successfully");
+                s.executeUpdate(query);
+                JOptionPane.showMessageDialog(null, "Topic Deleted Successfully");
                 setVisible(false);
                 new CSE101().setVisible(true);
             } catch (Exception e) {
@@ -375,9 +452,11 @@ public class CSE101 extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Topic name is empty");
         } else {
             try {
-                JDBCCONN conn = new JDBCCONN();
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                c = DriverManager.getConnection("jdbc:mysql:///database1", "root", "abhijite");
+                s = c.createStatement();
                 String query = "insert into cse101 values('" + title + "','" + sup + "','" + note + "','" + done + "')";
-                conn.s.executeUpdate(query);
+                s.executeUpdate(query);
                 JOptionPane.showMessageDialog(null, "Added Successfully");
                 setVisible(false);
                 new CSE101().setVisible(true);
@@ -397,27 +476,25 @@ public class CSE101 extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-//        table = new JTable();
         String value = jComboBox1.getSelectedItem().toString();
         jTable1.setModel(new DefaultTableModel(null, new String[]{"No", "Topic", "Resources", "Self-Note", "Completed"}));
         try {
-            JDBCCONN c = new JDBCCONN();
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            c = DriverManager.getConnection("jdbc:mysql:///database1", "root", "abhijite");
+            s = c.createStatement();
             ResultSet rs;
             if (value == "ALL") {
                 jLabel5.setText("All Topics :");
-                rs = c.s.executeQuery("select * from cse101");
+                rs = s.executeQuery("select * from cse101");
             } else if (value == "COMPLETE") {
                 jLabel5.setText("Completed Topics :");
-                rs = c.s.executeQuery("select * from cse101 where done=1");
+                rs = s.executeQuery("select * from cse101 where done=1");
             } else {
                 jLabel5.setText("Incompleted Topics :");
-                rs = c.s.executeQuery("select * from cse101 where done=0");
+                rs = s.executeQuery("select * from cse101 where done=0");
             }
-//            table.setModel(DbUtils.resultSetToTableModel(rs));
             int no = 1;
             while (rs.next()) {
-//                   System.out.println(rs.getInt(1)+ " "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5));
-//                String no = String.valueOf(rs.getInt("no"));
                 String title = rs.getString("title");
                 String sup = rs.getString("supliments");
                 String note = rs.getString("note");
@@ -455,9 +532,11 @@ public class CSE101 extends javax.swing.JFrame {
             tblModel.setValueAt(sup, jTable1.getSelectedRow(), 2);
             tblModel.setValueAt(note, jTable1.getSelectedRow(), 3);
             try {
-                JDBCCONN c = new JDBCCONN();
+                Class.forName("com.mysql.cj.jdbc.Driver");
+            c = DriverManager.getConnection("jdbc:mysql:///database1", "root", "abhijite");
+            s = c.createStatement();
                 String query = "update cse101 set title = '" + title + "', supliments = '" + sup + "', note = '" + note + "',done= '" + done + "' where title='" + ttitle + "'";
-                c.s.executeUpdate(query);
+                s.executeUpdate(query);
 //            System.out.println(query);
                 JOptionPane.showMessageDialog(this, "Update Successfully..");
                 setVisible(false);
@@ -477,6 +556,55 @@ public class CSE101 extends javax.swing.JFrame {
     private void CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_CheckBoxActionPerformed
+
+    private void view1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_view1ActionPerformed
+        try {
+            String st = txtsup.getText();
+            File file = new File(st);
+            if (file.exists()) {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(file);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Not Supported\n");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "File Not Found\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }//GEN-LAST:event_view1ActionPerformed
+
+    private void view2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_view2ActionPerformed
+        try {
+            String st = txtnote.getText();
+            File file = new File(st);
+            if (file.exists()) {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(file);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Not Supported\n");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "File Not Found\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_view2ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        txttitle.setText("");
+        txtsup.setText("");
+        txtnote.setText("");
+        CheckBox.setSelected(false);
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void txtsupKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsupKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtsupKeyTyped
 
     /**
      * @param args the command line arguments
@@ -520,17 +648,20 @@ public class CSE101 extends javax.swing.JFrame {
     private javax.swing.JButton btnprogress;
     private javax.swing.JButton btnupdate1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField txtnote;
     private javax.swing.JTextField txtsup;
     private javax.swing.JTextField txttitle;
+    private javax.swing.JButton view1;
+    private javax.swing.JButton view2;
     // End of variables declaration//GEN-END:variables
 }
